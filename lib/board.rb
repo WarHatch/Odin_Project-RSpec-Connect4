@@ -1,11 +1,13 @@
 # 7 x 6 connect four board
 class Board
-  attr_reader :slots, :COLUMNS, :ROWS
+  attr_reader :slots, :COLUMNS, :ROWS, :turn_color
 
+  # Yellow player starts the game
   def initialize
     @COLUMNS = 7
     @ROWS = 6
     @slots = Array.new(@COLUMNS * @ROWS)
+    @turn_color = :Y
   end
 
   def drop_in(color, column)
@@ -34,8 +36,22 @@ class Board
       row_index += 1
     end
   end
-end
 
-subject = Board.new
-2.times { subject.drop_in(:R, 1) }
-subject.print_board
+  def switch_colors
+    @turn_color = @turn_color == :Y ? :R : :Y
+  end
+
+  def ask_where_to_drop
+    puts "From 1 to #{@COLUMNS} choose a column to drop your slot in"
+    chosen_column = gets.chomp.to_i
+    chosen_column = ask_where_to_drop until chosen_column.between? 1, @COLUMNS
+    chosen_column
+  end
+
+  # The player whose turn is up drops a slot
+  def make_turn
+    drop_in @turn_color, ask_where_to_drop
+
+    switch_colors
+  end
+end
