@@ -92,8 +92,8 @@ describe Board do
 
       it 'finds a win when a 4th Y(ellow) is dropped in first column' do
         allow(subject).to receive(:ask_where_to_drop).and_return(1)
-        expect(subject.make_turn).to receive(:check_if_won).with([1, 4]).and_return(true) # FIXME: Make turn is expected to return  
-        subject.print_board
+        subject.make_turn
+        expect(subject.check_if_won([1, 4])).to eql true
       end
     end
   end
