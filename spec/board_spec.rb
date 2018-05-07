@@ -83,4 +83,29 @@ describe Board do
     end
   end
 
+  describe '#check_if_won' do
+    context '3 Y(ellow) slots in first column and 3 R(ed) slots in second column' do
+      before do
+        3.times { subject.drop_in(:Y, 1) }
+        3.times { subject.drop_in(:R, 2) }
+      end
+
+      it 'finds a win when a 4th Y(ellow) is dropped in first column' do
+        allow(subject).to receive(:ask_where_to_drop).and_return(1)
+        expect(subject.make_turn).to receive(:check_if_won).with([1, 4]).and_return(true) # FIXME: Make turn is expected to return  
+        subject.print_board
+      end
+    end
+  end
+
+  # describe 'play' do
+  #   before do
+  #     3.times subject.drop_in(:Y, 1)
+  #   end
+
+  #   it 'stops when a player has won' do
+  #     make_turn()
+  #   end
+  # end
+
 end

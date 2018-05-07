@@ -8,12 +8,15 @@ class Board
     @ROWS = 6
     @slots = Array.new(@COLUMNS * @ROWS)
     @turn_color = :Y
+    @won = nil
   end
 
   def drop_in(color, column)
     row = 1
     row += 1 until check_slot(column, row).nil? || row > @ROWS
-    @slots[(row - 1) * 7 + column - 1] = color
+    landed_at = [column, row]
+    @slots[(row - 1) * 7 + (column - 1)] = color
+    landed_at
   end
 
   # returns a value from slot array by coordinates 
@@ -48,10 +51,56 @@ class Board
     chosen_column
   end
 
-  # The player whose turn is up drops a slot
-  def make_turn
-    drop_in @turn_color, ask_where_to_drop
+  # TODO: refactor method to check_in_direction
+  def check_orthogonally(x, y)
+    won = false
+    # up
+    index = 1
+    while index < 4 && (y + index).between?(1, @ROWS) && !check_slot(x,y + index).nil?
+      index += 1
+      won = true if index == 4
+    end
 
+    # down
+    unless won
+      index = 1
+      while index < 4 && (y - index).between?(1, @ROWS) && !check_slot(x,(y - index)).nil?
+        index += 1
+        won = true if index == 4
+      end
+    end
+
+    # left
+    unless won
+      index = 1
+      while index < 4 && (x - index).between?(1, @ROWS) && !check_slot((x - index), y).nil?
+        index += 1
+        won = true if index == 4
+      end
+    end
+
+    # down
+    unless won
+      index = 1
+      while index < 4 && (x + index).between?(1, @ROWS) && !check_slot((x + index) ,y).nil?
+        index += 1
+        won = true if index == 4
+      end
+    end
+
+    won
+  end
+
+  def check_if_won(last_slot)
+    won = check_orthogonally(last_slot[0], last_slot[1])
+    won
+  end
+
+  # The player whose turn is up drops a slot and may win
+  def make_turn
+    column = ask_where_to_drop
+    landed_at = drop_in @turn_color, column
+    check_if_won landed_at
     switch_colors
   end
 end
